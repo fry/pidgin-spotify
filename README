@@ -1,0 +1,18 @@
+This is a Pidgin/libpurple plugin ONLY for Windows that sets the currently
+playing song in Spotify as the Pidgin "Now Listening" status message.
+
+Compiling
+---------
+To compile this plugin under Windows you have to set up the Pidgin build
+environment as explained here: http://developer.pidgin.im/wiki/BuildingWinPidgin
+
+Place the the folder with this plugin's source files into the C:\devel directory
+mentioned in the above documentation (or alternatively modify PIDGIN_TREE_TOP in
+Makefile.mingw to point to the C:\devel\pidgin-VERSION folder) and execute
+
+make -f Makefile.mingw
+
+Installing
+----------
+Place the spotify.dll in %APPDATA%\.purple\plugins and the plugin should appear
+in the available plugins list.

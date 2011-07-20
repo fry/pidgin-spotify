@@ -7,9 +7,6 @@
 PIDGIN_TREE_TOP := ../pidgin-2.9.0
 include $(PIDGIN_TREE_TOP)/libpurple/win32/global.mak
 
-.SUFFIXES:
-.SUFFIXES: .c .dll
-
 ##
 ## INCLUDE PATHS
 ##
@@ -36,7 +33,7 @@ LIBS =	\
 			-lpurple
 
 CXX_DEFINES = -D_WIN32_WINNT=0x0500 -DPCRE_STATIC -DWIN32 -DUNICODE
-
+CXXFLAGS = -O2 -Wall -pipe -mno-cygwin -mms-bitfields
 ##
 ## TARGET DEFINITIONS
 ##
@@ -49,13 +46,13 @@ install: all $(PURPLE_INSTALL_PLUGINS_DIR)
 	cp *.dll $(PURPLE_INSTALL_PLUGINS_DIR)
 
 spotify.o: spotify.cpp
-	$(CC) $(CFLAGS) $(CXX_DEFINES) $(DEFINES) $(INCLUDE_PATHS) -o spotify.o -c spotify.cpp
+	$(CXX) $(CXXFLAGS) $(CXX_DEFINES) $(DEFINES) $(INCLUDE_PATHS) -o spotify.o -c spotify.cpp
 
 SpotifyInfo.o: SpotifyInfo.cpp SpotifyInfo.hpp
-	$(CC) $(CFLAGS) $(CXX_DEFINES) $(DEFINES) $(INCLUDE_PATHS) -o SpotifyInfo.o -c SpotifyInfo.cpp
+	$(CXX) $(CXXFLAGS) $(CXX_DEFINES) $(DEFINES) $(INCLUDE_PATHS) -o SpotifyInfo.o -c SpotifyInfo.cpp
 
 spotify.dll: $(PURPLE_CONFIG_H) $(PURPLE_VERSION_H) spotify.o SpotifyInfo.o
-	g++ -static-libstdc++ -shared SpotifyInfo.cpp spotify.o $(LIB_PATHS) -D_WIN32_WINNT=0x0500 -DPCRE_STATIC -DWIN32 -DUNICODE  $(LIBS) $(DLL_LD_FLAGS) -o $@
+	$(CXX) $(CXXFLAGS) $(CXX_DEFINES) -static-libstdc++ -shared SpotifyInfo.cpp spotify.o $(LIB_PATHS) $(LIBS) $(DLL_LD_FLAGS) -o $@
 
 #%.dll: %.c $(PURPLE_CONFIG_H) $(PURPLE_VERSION_H)
 #	$(CC) $(CFLAGS) $(DEFINES) $(INCLUDE_PATHS) -o $@.o -c $<

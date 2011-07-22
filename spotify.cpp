@@ -1,6 +1,7 @@
 #define PURPLE_PLUGINS
 
 #include <glib.h>
+#include <sstream>
 
 #include "notify.h"
 #include "plugin.h"
@@ -17,7 +18,12 @@ PurplePlugin* spotify_plugin = NULL;
 // repeatedly called procedure that polls spotify for the song and modifies the status
 static gboolean spotify_poll(gpointer data) {
 	if (spotify.refresh()) {
-		purple_util_set_current_song(spotify.Title.c_str(), spotify.Artist.c_str(), NULL);
+		// magic UTF8 conversion
+		gchar* artist = g_locale_to_utf8(spotify.Artist.c_str(), spotify.Artist.length(), NULL, NULL, NULL);
+		gchar* title = g_locale_to_utf8(spotify.Title.c_str(), spotify.Title.length(), NULL, NULL, NULL);
+		purple_util_set_current_song(title, artist, NULL);
+		g_free(artist);
+		g_free(title);
 	} else {
 		purple_util_set_current_song(NULL, NULL, NULL);
 	}

@@ -8,8 +8,8 @@ BOOL CALLBACK enum_windows_proc(HWND hwnd, LPARAM lParam) {
 
 	SpotifyInfo* info = reinterpret_cast<SpotifyInfo*>(lParam);
 	if (info->ProcessID == process_id) {
-		wchar_t buffer[512];
-		if (GetClassName(hwnd, buffer, 512) && wcscmp(buffer, L"SpotifyMainWindow") == 0) {
+		char buffer[512];
+		if (GetClassName(hwnd, buffer, 512) && strcmp(buffer, "SpotifyMainWindow") == 0) {
 			info->Hwnd = hwnd;
 			return false;
 		}
@@ -20,23 +20,21 @@ BOOL CALLBACK enum_windows_proc(HWND hwnd, LPARAM lParam) {
 
 SpotifyInfo::SpotifyInfo(): Hwnd(NULL), ProcessID(0), IsPlaying(false) {}
 
-bool SpotifyInfo::parse_title(const std::wstring& window_title) {
+bool SpotifyInfo::parse_title(const std::string& window_title) {
 	WindowTitle = window_title;
 	// that special EN DASH separating artist and title
-	std::size_t dash_index = window_title.find_last_of(L"\u2013");
+	std::size_t dash_index = window_title.find_last_of("\x96");
 
-	if (dash_index == std::wstring::npos) {
+	if (dash_index == std::string::npos) {
 		Artist = "";
 		Title = "";
 		IsPlaying = false;
 		return false;
 	}
 	// skip the space at the end of the artist
-	std::wstring w_artist = window_title.substr(10, dash_index - 1 - 10);
-	Artist = std::string(w_artist.begin(), w_artist.end());
+	Artist = window_title.substr(10, dash_index - 1 - 10);
 	// skip the dash and space at the start of the title
-	std::wstring w_title = window_title.substr(dash_index + 2);
-	Title = std::string(w_title.begin(), w_title.end());
+	Title = window_title.substr(dash_index + 2);
 	IsPlaying = true;
 	return true;
 }
@@ -50,7 +48,7 @@ bool SpotifyInfo::find_process() {
 	bool success = Process32First(snapshot, &process);
 
 	while (success) {
-		if (wcsstr(process.szExeFile, L"spotify.exe")) {
+		if (strstr(process.szExeFile, "spotify.exe")) {
 			ProcessID = process.th32ProcessID;
 			CloseHandle(snapshot);
 			return true;
@@ -76,7 +74,7 @@ bool SpotifyInfo::refresh() {
 	if (Hwnd == NULL && !find_window())
 		return false;
 
-	wchar_t buffer[512];
-	int result = GetWindowText(Hwnd, buffer, 512);
+	char buffer[512];
+	GetWindowText(Hwnd, buffer, 512);
 	return parse_title(buffer);
 }

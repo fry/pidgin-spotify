@@ -8,7 +8,7 @@ struct SpotifyInfo {
 public:
 	DWORD ProcessID;
 	HWND Hwnd;
-	std::wstring WindowTitle;
+	std::string WindowTitle;
 	std::string Artist;
 	std::string Title;
 	bool IsPlaying;
@@ -16,7 +16,7 @@ public:
 	SpotifyInfo();
 
 	// Parse "Spotify - Artist <EN DASH> Title"
-	bool parse_title(const std::wstring& window_title);
+	bool parse_title(const std::string& window_title);
 	bool refresh();
 
 protected:
